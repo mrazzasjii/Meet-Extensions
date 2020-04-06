@@ -19,6 +19,20 @@ function _arrayBufferToBase64( buffer ) {
 
 chrome.webRequest.onBeforeRequest.addListener(
   function(info) {
+    console.log('Blocking sending meet invitation');
+    return {cancel: true};
+  },
+  // filters
+  {
+    urls: [
+      "https://meet.google.com/$rpc/google.rtc.meetings.v1.MeetingInvitationService*",
+    ],
+    types: ["xmlhttprequest"]
+  },
+  ["requestBody", "blocking"]);
+
+chrome.webRequest.onBeforeRequest.addListener(
+  function(info) {
     var post_binary = info.requestBody.raw[0].bytes;
     var post_form = ab2str(post_binary);
     var result = post_form.match(device_id_re);
